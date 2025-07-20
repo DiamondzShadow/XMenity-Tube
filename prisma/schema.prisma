@@ -1,0 +1,262 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Web3 identity
+  walletAddress String? @unique
+
+  // Session management
+  sessionToken String?
+  sessionExpiry DateTime?
+
+  // Relations
+  socialAccounts SocialAccount[]
+  tokens         CreatorToken[]
+  nfts          IdentityNFT[]
+  distributions TokenDistribution[]
+  claims        RewardClaim[]
+
+  @@map("users")
+}
+
+model SocialAccount {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Platform info
+  platform         String // "twitter", "instagram", etc.
+  platformUserId   String // Stable platform ID
+  platformUsername String // Handle (can change)
+  
+  // Verification
+  verified      Boolean @default(false)
+  verifiedAt    DateTime?
+  
+  // Metrics snapshot
+  followersCount Int     @default(0)
+  followingCount Int     @default(0)
+  postsCount     Int     @default(0)
+  engagementScore Float? @default(0)
+  
+  // InsightIQ data
+  insightiqUserId String?
+  lastSyncAt      DateTime?
+  
+  // Relations
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([platform, platformUserId])
+  @@unique([platform, platformUsername])
+  @@map("social_accounts")
+}
+
+model WalletXBinding {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Core binding
+  platformUserId   String
+  platformUsername String
+  walletAddress    String
+  
+  // Status
+  minted      Boolean @default(false)
+  lastMintAt  DateTime?
+  
+  // Metadata
+  extraMetadata Json?
+  
+  // SIWE verification
+  siweSignature String?
+  siweMessage   String?
+  siweNonce     String?
+
+  @@unique([platformUserId, walletAddress])
+  @@index([walletAddress])
+  @@index([platformUserId])
+  @@map("wallet_x_bindings")
+}
+
+model CreatorToken {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Token details
+  contractAddress String @unique
+  name           String
+  symbol         String
+  decimals       Int    @default(18)
+  
+  // Tokenomics
+  totalSupply      String @default("0") // Use string for big numbers
+  maxSupply        String?
+  tokensPerFollower String @default("1000000000000000000") // 1 token in wei
+  
+  // Milestone configuration
+  milestoneConfig Json? // Flexible milestone rules
+  
+  // Creator info
+  creatorUserId    String
+  creatorWallet    String
+  platformAccount  String // @username
+  
+  // Metrics tracking
+  lastFollowerCount Int @default(0)
+  lastUpdateAt     DateTime?
+  
+  // Relations
+  creator       User                @relation(fields: [creatorUserId], references: [id])
+  distributions TokenDistribution[]
+  claims        RewardClaim[]
+
+  @@map("creator_tokens")
+}
+
+model IdentityNFT {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // NFT details
+  contractAddress String
+  tokenId        String
+  metadataUri    String?
+  
+  // Identity info
+  ownerUserId    String
+  ownerWallet    String
+  platformHandle String
+  
+  // Snapshot data
+  followersAtMint Int
+  verifiedAt     DateTime
+  
+  // Relations
+  owner User @relation(fields: [ownerUserId], references: [id])
+
+  @@unique([contractAddress, tokenId])
+  @@map("identity_nfts")
+}
+
+model TokenDistribution {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Distribution details
+  tokenId      String
+  creatorId    String
+  title        String
+  description  String?
+  
+  // Distribution config
+  totalAmount     String // Total tokens to distribute
+  recipientCount  Int
+  distributionType String // "airdrop", "engagement", "milestone"
+  
+  // Execution
+  executed     Boolean @default(false)
+  executedAt   DateTime?
+  txHash       String?
+  
+  // Relations
+  token  CreatorToken  @relation(fields: [tokenId], references: [id])
+  creator User         @relation(fields: [creatorId], references: [id])
+  claims RewardClaim[]
+
+  @@map("token_distributions")
+}
+
+model RewardClaim {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Claim details
+  distributionId String
+  userId         String
+  tokenId        String
+  
+  // Recipient info
+  recipientWallet  String
+  recipientHandle  String?
+  amount          String
+  
+  // Engagement metrics
+  engagementScore Float?
+  followerStatus  String? // "active", "new", "top"
+  
+  // Claim status
+  claimed    Boolean @default(false)
+  claimedAt  DateTime?
+  txHash     String?
+
+  // Relations
+  distribution TokenDistribution @relation(fields: [distributionId], references: [id])
+  user         User              @relation(fields: [userId], references: [id])
+  token        CreatorToken      @relation(fields: [tokenId], references: [id])
+
+  @@unique([distributionId, userId])
+  @@map("reward_claims")
+}
+
+model OracleUpdate {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  // Target
+  tokenAddress    String
+  platformUserId  String
+  
+  // Metrics
+  oldFollowerCount Int
+  newFollowerCount Int
+  engagementData   Json?
+  
+  // Execution
+  txHash          String?
+  tokensAdded     String? // Amount minted
+  successful      Boolean @default(false)
+  errorMessage    String?
+
+  @@map("oracle_updates")
+}
+
+model ApiKey {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Key details
+  name        String
+  keyHash     String  @unique
+  permissions Json    // Array of permissions
+  
+  // Status
+  active     Boolean @default(true)
+  lastUsedAt DateTime?
+  expiresAt  DateTime?
+  
+  // Usage tracking
+  usageCount Int @default(0)
+  rateLimit  Int @default(1000) // requests per hour
+
+  @@map("api_keys")
+}
