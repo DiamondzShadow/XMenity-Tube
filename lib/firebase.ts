@@ -2,23 +2,40 @@ import { initializeApp, getApps, cert } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
 import { getFirestore } from 'firebase-admin/firestore';
 import { getStorage } from 'firebase-admin/storage';
+import * as path from 'path';
+import * as fs from 'fs';
 
-// Firebase Admin SDK configuration using service account
-const firebaseAdminConfig = {
-  projectId: process.env.FIREBASE_PROJECT_ID,
-  privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-  clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-};
-
-// Initialize Firebase Admin SDK
+// Firebase Admin SDK configuration
+let firebaseAdminConfig;
 let app;
+
 if (!getApps().length) {
+  // Check if service account key file exists (recommended for local development)
+  const keyPath = process.env.FIREBASE_SERVICE_ACCOUNT_KEY_PATH || './serviceAccountKey.json';
+  
+  if (fs.existsSync(keyPath)) {
+    // Use service account key file
+    console.log('🔑 Using Firebase service account key file:', keyPath);
+    const serviceAccount = require(path.resolve(keyPath));
+    firebaseAdminConfig = cert(serviceAccount);
+  } else {
+    // Use environment variables (for production/deployment)
+    console.log('🔑 Using Firebase environment variables');
+    firebaseAdminConfig = cert({
+      projectId: process.env.FIREBASE_PROJECT_ID || 'diamond-zminter',
+      privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+      clientEmail: process.env.FIREBASE_CLIENT_EMAIL || 'firebase-adminsdk-fbsvc@diamond-zminter.iam.gserviceaccount.com',
+    });
+  }
+
   app = initializeApp({
-    credential: cert(firebaseAdminConfig),
-    projectId: process.env.FIREBASE_PROJECT_ID,
-    databaseURL: process.env.FIREBASE_DATABASE_URL,
-    storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
+    credential: firebaseAdminConfig,
+    projectId: process.env.FIREBASE_PROJECT_ID || 'diamond-zminter',
+    databaseURL: process.env.FIREBASE_DATABASE_URL || 'https://diamond-zminter-default-rtdb.firebaseio.com',
+    storageBucket: process.env.FIREBASE_STORAGE_BUCKET || 'diamond-zminter.firebasestorage.app',
   });
+  
+  console.log('✅ Firebase Admin SDK initialized for project: diamond-zminter');
 } else {
   app = getApps()[0];
 }
