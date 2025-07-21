@@ -5,7 +5,7 @@ const nextConfig = {
   
   // Enable experimental features
   experimental: {
-    appDir: false, // Using pages router for now
+    // Using pages router - no appDir needed in Next.js 14
   },
 
   // Environment variables that should be exposed to the browser
