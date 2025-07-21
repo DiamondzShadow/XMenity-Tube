@@ -9,7 +9,12 @@
     "start": "next start",
     "lint": "next lint",
     "server": "node server/index.js",
-    "dev:server": "nodemon server/index.js"
+    "dev:server": "nodemon server/index.js",
+    "test": "echo \"Add your tests here\"",
+    "test:firebase": "node test-firebase-connection.js",
+    "deploy:vercel": "./scripts/deploy.sh vercel",
+    "deploy:gcp": "./scripts/deploy.sh gcp",
+    "deploy:local": "./scripts/deploy.sh local"
   },
   "dependencies": {
     "next": "^14.0.0",
@@ -19,7 +24,7 @@
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "thirdweb": "^5.0.0",
-    "viem": "^1.19.0",
+    "viem": "^2.0.0",
     "wagmi": "^2.0.0",
     "siwe": "^2.1.4",
     "ethers": "^6.8.0",
