@@ -1,14 +1,21 @@
-# Firebase Service Account Setup Guide
+# Firebase Service Account Setup Guide for Diamond ZMinter Project
 
-This guide helps you configure Firebase with service account authentication for your XMenity Social Token Factory.
+This guide helps you configure Firebase with service account authentication for your XMenity Social Token Factory using your **diamond-zminter** Firebase project.
 
-## 🔑 Getting Your Firebase Service Account Credentials
+## 🔑 Your Firebase Project Details
 
-### Method 1: Using Firebase Console (Recommended)
+**Project ID:** `diamond-zminter`  
+**Auth Domain:** `diamond-zminter.firebaseapp.com`  
+**Database URL:** `https://diamond-zminter-default-rtdb.firebaseio.com`  
+**Storage Bucket:** `diamond-zminter.firebasestorage.app`
+
+## 📋 Getting Your Service Account Credentials
+
+### Method 1: Firebase Console (Recommended)
 
 1. **Go to Firebase Console**
-   - Visit: https://console.firebase.google.com/
-   - Select your project
+   - Visit: https://console.firebase.google.com/project/diamond-zminter
+   - You should see your "Diamond ZMinter" project
 
 2. **Navigate to Project Settings**
    - Click the gear icon ⚙️ next to "Project Overview"
@@ -20,18 +27,17 @@ This guide helps you configure Firebase with service account authentication for 
 
 4. **Generate New Private Key**
    - Click "Generate new private key"
-   - Download the JSON file
-   - Keep this file secure!
+   - Download the JSON file (keep it secure!)
 
-### Method 2: Using Google Cloud Console
+### Method 2: Google Cloud Console
 
 1. **Go to Google Cloud Console**
    - Visit: https://console.cloud.google.com/
-   - Select your Firebase project
+   - Select "diamond-zminter" project
 
 2. **Navigate to IAM & Admin > Service Accounts**
    - Find your Firebase Admin SDK service account
-   - Click on it
+   - Should look like: `firebase-adminsdk-xxxxx@diamond-zminter.iam.gserviceaccount.com`
 
 3. **Create New Key**
    - Go to "Keys" tab
@@ -39,181 +45,165 @@ This guide helps you configure Firebase with service account authentication for 
    - Choose JSON format
    - Download the file
 
-## 🔧 Configuration Options
+## 🔧 Configuration for Your Project
 
-### Option 1: Environment Variables (Recommended for Production)
+### Environment Variables Setup
 
-Extract these values from your service account JSON file:
+From your downloaded service account JSON file, extract these values:
 
 ```bash
-# From your service account JSON file
-FIREBASE_PROJECT_ID=your-project-id
-FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nYour_private_key_here\n-----END PRIVATE KEY-----"
-FIREBASE_CLIENT_EMAIL=firebase-adminsdk-xxxxx@your-project.iam.gserviceaccount.com
+# Your specific Firebase project configuration
+FIREBASE_PROJECT_ID=diamond-zminter
+FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n[Your actual private key here]\n-----END PRIVATE KEY-----"
+FIREBASE_CLIENT_EMAIL=firebase-adminsdk-xxxxx@diamond-zminter.iam.gserviceaccount.com
+FIREBASE_AUTH_DOMAIN=diamond-zminter.firebaseapp.com
+FIREBASE_DATABASE_URL=https://diamond-zminter-default-rtdb.firebaseio.com/
+FIREBASE_STORAGE_BUCKET=diamond-zminter.firebasestorage.app
 ```
 
-### Option 2: Service Account File Path
+### Example JSON Structure
 
-```bash
-# Point to your downloaded JSON file
-GOOGLE_APPLICATION_CREDENTIALS=/path/to/service-account-key.json
-FIREBASE_PROJECT_ID=your-project-id
+Your service account file should look like:
+
+```json
+{
+  "type": "service_account",
+  "project_id": "diamond-zminter",
+  "private_key_id": "...",
+  "private_key": "-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n",
+  "client_email": "firebase-adminsdk-xxxxx@diamond-zminter.iam.gserviceaccount.com",
+  "client_id": "...",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "..."
+}
 ```
 
-## 🏗️ For Different Deployment Platforms
+## 🏗️ For Your GCP VM Deployment
 
-### **GCP VM Deployment**
+Since your VM is connected to your Firebase account:
 
-If your VM is already configured with a service account:
+### Option 1: VM Default Service Account (Easiest)
 
 ```bash
-# Check if service account is configured
+# Check if your VM has proper permissions
 gcloud auth list
 
-# If configured, you might not need explicit credentials
-# Just set the project ID
-FIREBASE_PROJECT_ID=your-project-id
+# Check current project
+gcloud config get-value project
+
+# Should show diamond-zminter
+# If correct, you might only need:
+FIREBASE_PROJECT_ID=diamond-zminter
 ```
 
-### **Vercel Deployment**
+### Option 2: Explicit Service Account
+
+Set these environment variables on your VM:
 
 ```bash
-# Add these environment variables in Vercel dashboard
-FIREBASE_PROJECT_ID=your-project-id
-FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nYour_private_key_here\n-----END PRIVATE KEY-----"
-FIREBASE_CLIENT_EMAIL=firebase-adminsdk-xxxxx@your-project.iam.gserviceaccount.com
-```
-
-**Important for Vercel:** Make sure to properly escape the private key:
-- Replace actual line breaks with `\n`
-- Wrap the entire key in quotes
-
-### **Replit Deployment**
-
-In Replit Secrets:
-```
-FIREBASE_PROJECT_ID=your-project-id
-FIREBASE_PRIVATE_KEY=-----BEGIN PRIVATE KEY-----\nYour_private_key_here\n-----END PRIVATE KEY-----
-FIREBASE_CLIENT_EMAIL=firebase-adminsdk-xxxxx@your-project.iam.gserviceaccount.com
-```
-
-### **Docker Deployment**
-
-Either use environment variables or mount the JSON file:
-
-```dockerfile
-# Option 1: Environment variables in docker-compose.yml
-environment:
-  - FIREBASE_PROJECT_ID=your-project-id
-  - FIREBASE_PRIVATE_KEY=your-private-key
-  - FIREBASE_CLIENT_EMAIL=your-client-email
-
-# Option 2: Mount JSON file
-volumes:
-  - ./path/to/service-account.json:/app/service-account.json
-environment:
-  - GOOGLE_APPLICATION_CREDENTIALS=/app/service-account.json
+# Create .env file on your VM
+echo "FIREBASE_PROJECT_ID=diamond-zminter" >> .env
+echo "FIREBASE_PRIVATE_KEY=\"[Your Private Key]\"" >> .env
+echo "FIREBASE_CLIENT_EMAIL=firebase-adminsdk-xxxxx@diamond-zminter.iam.gserviceaccount.com" >> .env
 ```
 
 ## 🔍 Testing Your Configuration
 
-Create a test script to verify your Firebase connection:
+Create a test file to verify the connection:
 
 ```javascript
-// test-firebase.js
-const { FirebaseService } = require('./lib/firebase');
+// test-firebase-connection.js
+const admin = require('firebase-admin');
 
-async function testFirebase() {
-  try {
-    // Test Firestore connection
-    const testDoc = await FirebaseService.saveDocument('test', 'connection', {
-      timestamp: new Date(),
-      message: 'Firebase connection successful!'
-    });
-    
-    console.log('✅ Firebase connected successfully!');
-    
-    // Clean up test document
-    await FirebaseService.deleteDocument('test', 'connection');
-    
-  } catch (error) {
-    console.error('❌ Firebase connection failed:', error);
-  }
+// Test configuration
+const firebaseConfig = {
+  projectId: 'diamond-zminter',
+  privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+  clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+};
+
+try {
+  const app = admin.initializeApp({
+    credential: admin.credential.cert(firebaseConfig),
+    projectId: 'diamond-zminter',
+    databaseURL: 'https://diamond-zminter-default-rtdb.firebaseio.com',
+    storageBucket: 'diamond-zminter.firebasestorage.app',
+  });
+
+  console.log('✅ Firebase connected successfully to diamond-zminter!');
+  console.log('App name:', app.name);
+  
+  // Test Firestore
+  const db = admin.firestore();
+  db.collection('test').add({
+    message: 'Connection test successful',
+    timestamp: admin.firestore.FieldValue.serverTimestamp()
+  }).then(() => {
+    console.log('✅ Firestore write test successful!');
+    process.exit(0);
+  });
+
+} catch (error) {
+  console.error('❌ Firebase connection failed:', error);
+  process.exit(1);
 }
-
-testFirebase();
 ```
 
 Run the test:
 ```bash
-node test-firebase.js
+node test-firebase-connection.js
 ```
 
-## 🛡️ Security Best Practices
+## 📊 Firebase Analytics Integration
 
-1. **Never commit service account files** to version control
-2. **Use environment variables** in production
-3. **Restrict service account permissions** to only what's needed
-4. **Rotate keys regularly** (every 90 days recommended)
-5. **Monitor service account usage** in Firebase console
+Your project also includes Analytics tracking. The client-side will automatically track:
 
-## 🚨 Troubleshooting
+- Wallet connections
+- Social account linking
+- Token creation events
+- Reward distributions
+- User engagement metrics
 
-### Common Errors:
+Analytics Dashboard: https://console.firebase.google.com/project/diamond-zminter/analytics
 
-**Error: "FIREBASE_PRIVATE_KEY is not valid"**
-- Make sure private key includes header/footer
-- Check for proper escaping of newlines (`\n`)
-- Verify quotes around the entire key
+## 🛡️ Security Checklist
 
-**Error: "Service account does not exist"**
-- Verify FIREBASE_CLIENT_EMAIL is correct
-- Check that service account has proper roles
-- Ensure project ID matches
+- [ ] Downloaded service account JSON securely
+- [ ] Added JSON file to `.gitignore` 
+- [ ] Set environment variables correctly
+- [ ] Tested Firebase connection
+- [ ] Verified Firestore rules are properly configured
+- [ ] Enabled necessary Firebase services (Auth, Firestore, Storage, Analytics)
 
-**Error: "Permission denied"**
-- Service account needs "Firebase Admin SDK Administrator Service Agent" role
-- Add additional roles as needed for your specific use case
+## 🚨 Troubleshooting Common Issues
 
-### Verification Steps:
+### Error: "Project diamond-zminter not found"
+- Verify you have access to the project
+- Check that the project ID is exactly `diamond-zminter`
 
-1. **Check environment variables are loaded:**
-   ```javascript
-   console.log('Project ID:', process.env.FIREBASE_PROJECT_ID);
-   console.log('Client Email:', process.env.FIREBASE_CLIENT_EMAIL);
-   console.log('Private Key (first 50 chars):', process.env.FIREBASE_PRIVATE_KEY?.substring(0, 50));
-   ```
+### Error: "Permission denied"
+- Ensure your service account has the "Firebase Admin SDK Administrator Service Agent" role
+- Check IAM permissions in Google Cloud Console
 
-2. **Test with minimal Firebase operation:**
-   ```javascript
-   const admin = require('firebase-admin');
-   
-   // This should not throw an error
-   const app = admin.initializeApp({
-     credential: admin.credential.cert({
-       projectId: process.env.FIREBASE_PROJECT_ID,
-       clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-       privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-     }),
-   });
-   
-   console.log('Firebase app initialized:', app.name);
-   ```
+### Error: "Invalid private key"
+- Make sure newlines are properly escaped: `\\n` in .env files
+- Verify the key includes `-----BEGIN PRIVATE KEY-----` and `-----END PRIVATE KEY-----`
 
-## 📚 Additional Resources
+## 🎯 Quick Setup Commands
 
-- [Firebase Admin SDK Setup](https://firebase.google.com/docs/admin/setup)
-- [Service Account Authentication](https://cloud.google.com/docs/authentication/getting-started)
-- [Firebase Security Rules](https://firebase.google.com/docs/rules)
+```bash
+# For GCP VM (if service account is pre-configured)
+export FIREBASE_PROJECT_ID=diamond-zminter
 
-## 🎯 Next Steps
+# For manual setup (replace with your actual values)
+export FIREBASE_PROJECT_ID=diamond-zminter
+export FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n[Your Key]\n-----END PRIVATE KEY-----"
+export FIREBASE_CLIENT_EMAIL="firebase-adminsdk-xxxxx@diamond-zminter.iam.gserviceaccount.com"
 
-After configuring Firebase:
+# Test the setup
+npm run test:firebase
+```
 
-1. ✅ Set up your environment variables
-2. ✅ Test the connection
-3. ✅ Deploy your Social Token Factory
-4. ✅ Configure Firestore security rules
-5. ✅ Set up Firebase Functions (if needed)
-
-Your Firebase service account is now ready for the Social Token Factory! 🚀
+Your Firebase configuration is now ready for the diamond-zminter project! 🚀💎

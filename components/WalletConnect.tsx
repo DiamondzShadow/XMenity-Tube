@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useAccount, useConnect, useDisconnect, useSignMessage } from 'wagmi';
 import { SiweMessage } from 'siwe';
 import { switchToArbitrum } from '@/lib/thirdweb';
+import { FirebaseClient } from '@/lib/firebase-client';
 
 interface WalletConnectProps {
   onWalletVerified: (address: string) => void;
@@ -37,11 +38,21 @@ export default function WalletConnect({ onWalletVerified, onError }: WalletConne
       const connector = connectors[0]; // Use first available connector (usually MetaMask)
       if (connector) {
         connect({ connector });
+        
+        // Track wallet connection attempt
+        FirebaseClient.logEvent('wallet_connection_attempted', {
+          connector_name: connector.name
+        });
       }
     } catch (err) {
       const errorMsg = 'Failed to connect wallet';
       setError(errorMsg);
       onError?.(errorMsg);
+      
+      // Track connection error
+      FirebaseClient.logEvent('wallet_connection_failed', {
+        error: errorMsg
+      });
     }
   };
 
@@ -49,15 +60,31 @@ export default function WalletConnect({ onWalletVerified, onError }: WalletConne
     disconnect();
     setIsVerified(false);
     setError(null);
+    
+    // Track wallet disconnection
+    FirebaseClient.logEvent('wallet_disconnected', {
+      wallet_address: address
+    });
   };
 
   const switchNetwork = async () => {
     try {
       await switchToArbitrum();
+      
+      // Track network switch
+      FirebaseClient.logEvent('network_switched_to_arbitrum', {
+        wallet_address: address
+      });
     } catch (err) {
       const errorMsg = 'Failed to switch to Arbitrum network';
       setError(errorMsg);
       onError?.(errorMsg);
+      
+      // Track network switch error
+      FirebaseClient.logEvent('network_switch_failed', {
+        error: errorMsg,
+        wallet_address: address
+      });
     }
   };
 
@@ -105,6 +132,13 @@ export default function WalletConnect({ onWalletVerified, onError }: WalletConne
       if (verifyResult.success) {
         setIsVerified(true);
         onWalletVerified(address);
+        
+        // Track successful wallet verification
+        FirebaseClient.logUserConnectedWallet(address);
+        FirebaseClient.logEvent('siwe_verification_success', {
+          wallet_address: address,
+          chain_id: chain?.id
+        });
       } else {
         throw new Error(verifyResult.error || 'Signature verification failed');
       }
@@ -112,6 +146,12 @@ export default function WalletConnect({ onWalletVerified, onError }: WalletConne
       const errorMsg = err.message || 'Failed to verify wallet signature';
       setError(errorMsg);
       onError?.(errorMsg);
+      
+      // Track verification error
+      FirebaseClient.logEvent('siwe_verification_failed', {
+        error: errorMsg,
+        wallet_address: address
+      });
     } finally {
       setIsVerifying(false);
     }
