@@ -69,16 +69,25 @@ export interface InsightIQFollowerData {
 class InsightIQClient {
   private client: AxiosInstance;
   private baseURL: string;
-  private apiKey: string;
+  private apiKey?: string;
+  private clientId: string;
+  private clientSecret: string;
 
   constructor() {
     this.baseURL = process.env.INSIGHTIQ_BASE_URL || 'https://api.staging.insightiq.ai/v1';
-    this.apiKey = process.env.INSIGHTIQ_API_KEY!;
+    this.apiKey = process.env.INSIGHTIQ_API_KEY; // Optional for OAuth flow
+    this.clientId = process.env.INSIGHTIQ_CLIENT_ID!;
+    this.clientSecret = process.env.INSIGHTIQ_CLIENT_SECRET!;
+
+    // Configure axios with OAuth credentials
+    const authHeader = this.apiKey 
+      ? `Bearer ${this.apiKey}`
+      : `Basic ${Buffer.from(`${this.clientId}:${this.clientSecret}`).toString('base64')}`;
 
     this.client = axios.create({
       baseURL: this.baseURL,
       headers: {
-        'Authorization': `Basic ${this.apiKey}`,
+        'Authorization': authHeader,
         'Content-Type': 'application/json',
       },
       timeout: 30000,
