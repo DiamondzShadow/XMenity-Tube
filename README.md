@@ -1,246 +1,313 @@
 # 🎭 XMenity Social Token Factory
 
-> **Create and manage social tokens for X (Twitter) creators using InsightIQ integration, deployed on Arbitrum**
+> **The Complete Social Token Platform - Beautiful UI meets Powerful Backend**
 
-A comprehensive social token factory that enables X (Twitter) creators to mint tokens based on their social engagement metrics, verified through InsightIQ and deployed on Arbitrum for low-cost transactions.
+A comprehensive social token factory that enables X (Twitter) creators to mint tokens based on their social engagement metrics, featuring a modern UI built with Radix components and powerful backend integration with InsightIQ, Firebase, and Arbitrum.
 
-## 🌟 Features
+## ✨ Features
 
-### 🔗 Core Integrations
+### 🎨 **Modern Frontend (Next.js 15 + Radix UI)**
+- **Beautiful Dashboard** - Clean, modern interface with gradient backgrounds
+- **Radix UI Components** - Professional, accessible UI components
+- **Real-time Updates** - Live token metrics and social stats
+- **Responsive Design** - Works perfectly on desktop and mobile
+- **Dark/Light Theme** - Theme switching with next-themes
+- **Interactive Charts** - Token performance visualization with Recharts
+
+### 🔗 **Backend Integration**
 - **InsightIQ Connect SDK** - OAuth and social profile/engagement data
 - **Thirdweb SDK** - Contract interaction and transaction sending  
 - **Sign-In With Ethereum (SIWE)** - Wallet verification
-- **Firebase** - Backend storage and analytics (diamond-zminter project)
+- **Firebase Integration** - Backend storage and analytics (diamond-zminter project)
 - **Arbitrum One** - Low-cost blockchain deployment
 
-### 🏗️ Smart Contract Features
+### 🏗️ **Smart Contract Features**
 - **Social Token Factory** - Deploy custom ERC-20 tokens for creators
-- **Milestone-based Minting** - Token minting based on follower/engagement milestones
-- **Oracle Integration** - Real-time social media data verification
+- **Milestone-based Minting** - Automatic token rewards for social milestones
+- **Oracle Integration** - Real-time social metrics verification
 - **Identity NFTs** - Soulbound tokens for creator verification
-- **Batch Reward Distribution** - Efficient token distribution to followers
+- **Reward Distribution** - Batch token transfers to supporters
 
-### 🎨 Frontend Features
-- **Modern Next.js UI** - React, TailwindCSS, responsive design
-- **Wallet Integration** - RainbowKit, Wagmi, Viem for Web3 connectivity
-- **Real-time Analytics** - Firebase Analytics tracking
-- **Multi-platform Deployment** - Vercel, Replit, GCP VM, Docker support
+### 🛡️ **Security & Compliance**
+- **Role-based Access Control** - Secure permission management
+- **Rate Limiting** - API protection against abuse
+- **SIWE Authentication** - Cryptographic wallet verification
+- **Input Validation** - Comprehensive data sanitization
+- **Anti-Sybil Measures** - Protection against fake accounts
 
 ## 🚀 Quick Start
 
-### Prerequisites
-- Node.js 18+
-- Firebase project (diamond-zminter)
+### **Prerequisites**
+- Node.js 18+ 
+- npm or yarn
+- Firebase account
 - InsightIQ API access
 - Thirdweb account
-- Web3 wallet (MetaMask recommended)
 
-### 1. Clone & Install
+### **1. Clone the Repository**
 ```bash
-git clone <your-repo-url>
-cd xmenity-social-token-factory
+git clone https://github.com/DiamondzShadow/XMenity-Tube.git
+cd XMenity-Tube
+```
+
+### **2. Install Dependencies**
+```bash
 npm install --legacy-peer-deps
 ```
 
-### 2. Environment Setup
-Copy `.env.example` to `.env` and configure:
-
+### **3. Environment Configuration**
 ```bash
-# Firebase Configuration (diamond-zminter project)
+# Copy the example environment file
+cp .env.example .env
+
+# Edit .env with your configuration
+nano .env
+```
+
+### **4. Required Environment Variables**
+
+#### **Firebase Configuration (diamond-zminter project)**
+```bash
 FIREBASE_PROJECT_ID=diamond-zminter
-FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nYour_Private_Key\n-----END PRIVATE KEY-----"
-FIREBASE_CLIENT_EMAIL=firebase-adminsdk-xxxxx@diamond-zminter.iam.gserviceaccount.com
-
-# InsightIQ Integration
-INSIGHTIQ_API_KEY=your_insightiq_api_key
-INSIGHTIQ_CLIENT_ID=your_client_id
-INSIGHTIQ_CLIENT_SECRET=your_client_secret
-
-# Thirdweb Configuration
-THIRDWEB_CLIENT_ID=your_thirdweb_client_id
-THIRDWEB_SECRET_KEY=your_thirdweb_secret_key
-
-# Smart Contract (Arbitrum One)
-SOCIAL_TOKEN_FACTORY_ADDRESS=0x2AF9605d00E61Aa38a40562B651227b59c506275
-ARBITRUM_RPC_URL=https://arb1.arbitrum.io/rpc
-
-# Database
-DATABASE_URL=postgresql://user:pass@localhost:5432/social_tokens
-
-# Security
-JWT_SECRET=your_jwt_secret_here
-NEXTAUTH_SECRET=your_nextauth_secret
+FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nYour_private_key_here\n-----END PRIVATE KEY-----"
+FIREBASE_CLIENT_EMAIL=firebase-adminsdk-fbsvc@diamond-zminter.iam.gserviceaccount.com
+FIREBASE_AUTH_DOMAIN=diamond-zminter.firebaseapp.com
+FIREBASE_DATABASE_URL=https://diamond-zminter-default-rtdb.firebaseio.com
+FIREBASE_STORAGE_BUCKET=diamond-zminter.firebasestorage.app
 ```
 
-### 3. Database Setup
+#### **InsightIQ Configuration (Staging)**
 ```bash
-# Initialize Prisma
-npx prisma generate
-npx prisma db push
-
-# Optional: Seed with sample data
-npx prisma db seed
+INSIGHTIQ_BASE_URL=https://api.staging.insightiq.ai/v1
+INSIGHTIQ_CLIENT_ID=62b74562-505d-4062-aa18-8ed30298b243
+INSIGHTIQ_CLIENT_SECRET=f1a58605-ae7e-4450-8c92-3ada5dfcaabd
 ```
 
-### 4. Development
+#### **Smart Contract Configuration**
 ```bash
-# Start development server
+FACTORY_CONTRACT_ADDRESS=0x2AF9605d00E61Aa38a40562B651227b59c506275
+ARBITRUM_RPC_URL=https://arbitrum-one.infura.io/v3/your_infura_key
+CHAIN_ID=42161
+```
+
+#### **Application Configuration**
+```bash
+FRONTEND_URL=http://localhost:3000
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+JWT_SECRET=your_generated_64_character_random_hex_string
+```
+
+### **5. Generate JWT Secret**
+```bash
+# Generate a secure JWT secret
+node -e "console.log('JWT_SECRET=' + require('crypto').randomBytes(64).toString('hex'))"
+```
+
+### **6. Start Development Server**
+```bash
 npm run dev
-
-# Open browser
-open http://localhost:3000
 ```
 
-## 📖 Documentation
+Your app will be available at `http://localhost:3000` 🎉
 
-### 🔥 Firebase Setup
-Your project uses the **diamond-zminter** Firebase project:
-- **Project ID**: `diamond-zminter`
-- **Console**: https://console.firebase.google.com/project/diamond-zminter
-- **Setup Guide**: See `scripts/firebase-setup.md`
+## 🏗️ Architecture
 
-### 🛠️ Architecture
+### **Frontend Stack**
+- **Next.js 15** - React framework with App Router
+- **TypeScript** - Type-safe development
+- **Radix UI** - Professional component library
+- **Tailwind CSS** - Utility-first styling
+- **Lucide Icons** - Beautiful icon library
+- **Recharts** - Data visualization
+- **next-themes** - Theme management
 
+### **Web3 Stack**
+- **Wagmi v2** - React hooks for Ethereum
+- **Viem v2** - TypeScript Ethereum library
+- **RainbowKit** - Wallet connection UI
+- **Thirdweb SDK** - Web3 development tools
+- **SIWE** - Sign-In With Ethereum
+
+### **Backend Stack**
+- **Firebase Admin SDK** - Server-side Firebase integration
+- **InsightIQ API** - Social media analytics
+- **Prisma ORM** - Database management
+- **Express.js** - API server
+- **JSON Web Tokens** - Session management
+
+## 🎨 UI Components
+
+### **Dashboard Features**
+- **📊 Analytics Cards** - Real-time token metrics
+- **🎛️ Token Creation** - Step-by-step token launcher
+- **🐦 Social Integration** - X/Twitter account linking
+- **📈 Performance Charts** - Token analytics and growth
+- **⚙️ Settings Panel** - Configuration management
+
+### **Component Examples**
+```tsx
+import { Button } from "@/components/ui/button"
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+
+// Beautiful gradient buttons
+<Button className="bg-purple-600 hover:bg-purple-700">
+  Create Token
+</Button>
+
+// Professional cards with metrics
+<Card>
+  <CardHeader>
+    <CardTitle>Total Value</CardTitle>
+  </CardHeader>
+  <CardContent>
+    <div className="text-2xl font-bold">$12,345</div>
+  </CardContent>
+</Card>
 ```
-┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
-│   Next.js App   │    │  Firebase Admin  │    │  InsightIQ API  │
-│   (Frontend)    │    │   (Database)     │    │  (Social Data)  │
-└─────────────────┘    └──────────────────┘    └─────────────────┘
-         │                       │                       │
-         │                       │                       │
-    ┌─────────────────────────────────────────────────────────────────┐
-    │                    Arbitrum One Network                         │
-    │  ┌─────────────────┐  ┌──────────────┐  ┌─────────────────┐    │
-    │  │ Social Token    │  │   Creator    │  │   Identity      │    │
-    │  │    Factory      │  │   Tokens     │  │     NFTs        │    │
-    │  └─────────────────┘  └──────────────┘  └─────────────────┘    │
-    └─────────────────────────────────────────────────────────────────┘
-```
 
-### 🔗 Smart Contract Integration
+## 🔧 Deployment
 
-The factory contract `0x2AF9605d00E61Aa38a40562B651227b59c506275` on Arbitrum One provides:
-
-```solidity
-// Create new social token
-function createSocialToken(
-    string memory name,
-    string memory symbol,
-    address creator,
-    uint256 initialSupply
-) external returns (address tokenAddress);
-
-// Mint tokens based on milestones
-function mintFromMilestone(
-    address tokenAddress,
-    address recipient,
-    uint256 amount,
-    bytes calldata oracleData
-) external;
-```
-
-### 📊 Analytics Events
-
-Firebase automatically tracks:
-- `wallet_connected` - User connects wallet
-- `social_account_linked` - Links X/Twitter account  
-- `token_created` - Creates new social token
-- `token_minted` - Mints tokens from milestones
-- `reward_distributed` - Distributes rewards to followers
-
-## 🚀 Deployment
-
-### Vercel (Recommended)
+### **Vercel (Recommended)**
 ```bash
 npm run deploy:vercel
 ```
 
-### GCP VM
+### **Local Development**
 ```bash
-npm run deploy:gcp
+npm run dev
 ```
 
-### Local Development
+### **Docker**
 ```bash
-npm run deploy:local
+docker build -t xmenity-social-factory .
+docker run -p 3000:3000 xmenity-social-factory
 ```
 
-### Docker
+### **GCP VM**
 ```bash
-docker build -t xmenity-social-tokens .
-docker run -p 3000:3000 xmenity-social-tokens
+# For external access (replace with your IP)
+npm run dev -- -H 0.0.0.0
+# Configure firewall for port 3000
+```
+
+## 📱 External Access (VM Deployment)
+
+For deployment on cloud VMs with external IP access:
+
+### **AWS EC2**
+1. Go to **Security Groups** in AWS Console
+2. Add **Inbound Rule**: Custom TCP, Port 3000, Source 0.0.0.0/0
+
+### **Google Cloud**
+```bash
+gcloud compute firewall-rules create allow-xmenity-port \
+  --allow tcp:3000 \
+  --description="Allow XMenity Social Token Factory on port 3000" \
+  --direction=INGRESS
+```
+
+### **Test External Access**
+```bash
+curl -I http://YOUR_EXTERNAL_IP:3000
 ```
 
 ## 🧪 Testing
 
-### Firebase Connection
+### **Firebase Connection**
 ```bash
 npm run test:firebase
 ```
 
-### Full Test Suite
+### **Development Scripts**
 ```bash
-npm test
+npm run dev          # Start development server
+npm run build        # Build for production
+npm run start        # Start production server
+npm run lint         # Run ESLint
+npm run update-vm    # Update VM deployment
 ```
 
-## 🔐 Security Features
+## 📚 API Routes
 
-- **SIWE Authentication** - Cryptographic wallet verification
-- **Rate Limiting** - API endpoint protection
-- **Environment Validation** - Secure config management
-- **Role-based Access** - Creator/admin/user permissions
-- **Anti-Sybil Measures** - Prevent duplicate accounts
-- **Oracle Verification** - Trusted social media data
+### **Authentication**
+- `POST /api/siwe/nonce` - Generate SIWE nonce
+- `POST /api/siwe/verify` - Verify SIWE signature
 
-## 🎯 Use Cases
+### **Token Management**
+- `POST /api/tokens/create` - Create new social token
+- `GET /api/tokens/user` - Get user's tokens
+- `POST /api/tokens/mint` - Mint tokens based on milestones
 
-### For Creators
-- **Monetize Following** - Convert followers into token holders
-- **Reward Engagement** - Distribute tokens for likes, retweets, comments
-- **Milestone Rewards** - Automatic token minting at follower milestones
-- **Community Building** - Create exclusive holder benefits
+### **Social Integration**
+- `POST /api/social/connect` - Connect X/Twitter account
+- `GET /api/social/stats` - Get social media statistics
+- `POST /api/social/verify` - Verify social milestones
 
-### For Followers
-- **Earn Tokens** - Get rewarded for engaging with content
-- **Creator Access** - Exclusive content and experiences
-- **Token Trading** - Buy/sell creator tokens on secondary markets
-- **Governance** - Vote on creator decisions
+## 🗄️ Database Schema
 
-## 📈 Roadmap
+```sql
+-- Core tables for social token management
+User          - User accounts and wallet addresses
+SocialAccount - Connected social media accounts
+CreatorToken  - Deployed creator tokens
+IdentityNFT   - Soulbound identity tokens
+TokenDistribution - Token distribution records
+RewardClaim   - Milestone reward claims
+OracleUpdate  - Social metrics updates
+```
 
-- [ ] **Multi-chain Support** - Expand beyond Arbitrum
-- [ ] **Advanced Analytics** - Detailed creator dashboards  
-- [ ] **NFT Integration** - Combine tokens with exclusive NFTs
-- [ ] **Mobile App** - React Native mobile application
-- [ ] **DAO Features** - Decentralized governance for creators
+## 🎯 Roadmap
+
+### **Phase 1: Core Platform ✅**
+- [x] Social token creation
+- [x] Wallet integration
+- [x] Basic UI components
+
+### **Phase 2: Enhanced UI ✅**
+- [x] Modern Radix UI components
+- [x] Beautiful dashboard
+- [x] Responsive design
+
+### **Phase 3: Advanced Features 🚧**
+- [ ] Advanced analytics
+- [ ] Multi-chain support
+- [ ] DAO governance integration
+
+### **Phase 4: Ecosystem 📋**
+- [ ] Mobile app
+- [ ] Third-party integrations
+- [ ] Marketplace features
 
 ## 🤝 Contributing
 
 1. Fork the repository
-2. Create feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit changes (`git commit -m 'Add amazing feature'`)
-4. Push to branch (`git push origin feature/amazing-feature`)
-5. Open Pull Request
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🆘 Support
-
-- **Documentation**: Check `scripts/firebase-setup.md`
-- **Issues**: GitHub Issues
-- **Discord**: [Join our community](#)
-- **Email**: support@xmenity.com
-
 ## 🙏 Acknowledgments
 
-- **Thirdweb** - Web3 development framework
+- **Radix UI** - Amazing component library
+- **Vercel** - Deployment platform
+- **Thirdweb** - Web3 development tools
 - **InsightIQ** - Social media analytics
-- **Firebase** - Backend infrastructure  
 - **Arbitrum** - Layer 2 scaling solution
-- **Next.js** - React framework
+
+## 🔗 Links
+
+- **Live Demo**: [Your deployed URL]
+- **Documentation**: [Your docs URL]  
+- **Discord**: [Your Discord server]
+- **Twitter**: [Your Twitter handle]
 
 ---
 
-**Built with ❤️ for the creator economy on Web3** 🚀💎
+**Built with ❤️ by DiamondzShadow**
+
+*Empowering creators with decentralized social tokens* 🚀
