@@ -14,7 +14,8 @@ const nextConfig = {
     FACTORY_CONTRACT_ADDRESS: process.env.FACTORY_CONTRACT_ADDRESS,
     ARBITRUM_RPC_URL: process.env.ARBITRUM_RPC_URL,
     CHAIN_ID: process.env.CHAIN_ID,
-    FRONTEND_URL: process.env.FRONTEND_URL,
+    FRONTEND_URL: process.env.FRONTEND_URL || 'http://34.45.54.110:3000',
+    NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL || 'http://34.45.54.110:3000',
   },
 
   // Image domains for external images

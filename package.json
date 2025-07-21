@@ -4,7 +4,7 @@
   "description": "Social Token Factory for X (Twitter) creators using InsightIQ integration",
   "main": "index.js",
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -H 0.0.0.0",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
